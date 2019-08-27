@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: kubesphere.io
+    http:
+      paths:
+      - backend:
+          serviceName: production
+          servicePort: 80
