@@ -8,5 +8,5 @@
 - hosts: kube-master[0]
   roles:
     - kubesphere-defaults
-    - { role: ks-devops/harbor, when: "harbor_enable == true" }
-    - { role: ks-devops/gitlab, when: "gitlab_enable == true" }
+    - { role: ks-devops/harbor, when: "harbor_enable|default(false)" }
+    - { role: ks-devops/gitlab, when: "gitlab_enable|default(false)" }

@@ -28,10 +28,10 @@ eof
 
 
 function install-harbor(){
-	ansible-playbook -i $BASE_FOLDER/../k8s/inventory/local/hosts.ini $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
+        ansible-playbook -i $1 $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
                  -b \
                  -e harbor_enable=true 
-	if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; then
         #statements
         str="successsful!"
         echo -e "\033[30;47m$str\033[0m"  
@@ -43,10 +43,10 @@ function install-harbor(){
 }
 
 function install-gitlab(){
-	ansible-playbook -i $BASE_FOLDER/../k8s/inventory/local/hosts.ini $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
+        ansible-playbook -i $1 $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
                  -b \
                  -e gitlab_enable=true 
-	if [[ $? -eq 0 ]]; then
+        if [[ $? -eq 0 ]]; then
         #statements
         str="successsful!"
         echo -e "\033[30;47m$str\033[0m"  
@@ -58,11 +58,11 @@ function install-gitlab(){
 }
 
 function install-gitlab-harbor(){
-	ansible-playbook -i $BASE_FOLDER/../k8s/inventory/my_cluster/hosts.ini $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
+        ansible-playbook -i $1 $BASE_FOLDER/../kubesphere/install-gitlab-harbor.yml \
                  -b \
                  -e gitlab_enable=true \
-				 -e harbor_enable=true 
-	if [[ $? -eq 0 ]]; then
+                                 -e harbor_enable=true 
+        if [[ $? -eq 0 ]]; then
         #statements
         str="successsful!"
         echo -e "\033[30;47m$str\033[0m"  
@@ -73,8 +73,7 @@ function install-gitlab-harbor(){
     fi
 }
 
-while true
-do
+function exec(){
     menu
        # all-in-one tends to install everything on one node.
     read -p "Please input an option: " option
@@ -82,16 +81,35 @@ do
 
     case $option in
        1)
-            install-harbor
+            install-harbor $1
             exit
                ;;
        2)
-            install-gitlab
+            install-gitlab $1
             exit
                ;;
        3)
-            install-gitlab-harbor
-            break
+            install-gitlab-harbor $1
+            exit
                ;;
     esac
-done
+}
+    
+
+function multinode(){
+    hostmultinode=$BASE_FOLDER/../k8s/inventory/my_cluster/hosts.ini
+    exec ${hostmultinode}
+}
+
+function allinone(){
+    hostallinone=$BASE_FOLDER/../k8s/inventory/local/hosts.ini
+    exec ${hostallinone}
+}
+
+hostname=$(hostname)
+
+if [[ $hostname != "ks-allinone" ]]; then
+    multinode
+else
+    allinone
+fi
