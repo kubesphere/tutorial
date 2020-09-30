@@ -1,47 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apm-item
+  name: apm-eureka
   namespace: demo
   labels:
-    app: apm-item
+    deploy: apm-eureka
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: apm-item
+      app: apm-eureka
   template:
     metadata:
-      name: apm-item
+      name: apm-eureka
       labels:
-        app: apm-item
+        app: apm-eureka
     spec:
       initContainers:
         - name: sidecar
-          image: apache/skywalking-base:6.5.0 # 容器镜像，包含静态资源文件
+          image: apache/skywalking-base:8.1.0-es7 # 容器镜像，包含静态资源文件
           imagePullPolicy: IfNotPresent
           command: ["cp", "-r", "/skywalking/agent", "/sidecar"]
           volumeMounts:
             - name: sidecar
               mountPath: /sidecar
       containers:
-        - name: apm-item
-          image: evanxuhe/apm-item:6.1.0
+        - name: apm-eureka
+          image: evanxuhe/apm-eureka:6.1.0
           imagePullPolicy: IfNotPresent
           env:
             - name: JAVA_OPTS
               value: -javaagent:/sidecar/agent/skywalking-agent.jar
             - name: SW_AGENT_NAME
-              value: apm-item
-            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-              value: skywalk-1h6lqf-skywalking-skywalking-oap.demo:11800 # skywalk oap 后端服务
-            - name: EUREKA_HOSTNAME
               value: apm-eureka
-            - name: EUREKA_PORT
-              value: '8761'
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+              value: skywalking-oap.demo.svc:11800 # skywalk oap 后端服务
           ports:
             - name: http
-              containerPort: 8082
+              containerPort: 8761
           volumeMounts:
             - name: sidecar
               mountPath: /sidecar
