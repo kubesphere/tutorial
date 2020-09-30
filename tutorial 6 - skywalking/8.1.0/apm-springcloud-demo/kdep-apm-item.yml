@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
         - name: sidecar
-          image: apache/skywalking-base:6.5.0 # 容器镜像，包含静态资源文件
+          image: apache/skywalking-base:8.1.0-es7 # 容器镜像，包含静态资源文件
           imagePullPolicy: IfNotPresent
           command: ["cp", "-r", "/skywalking/agent", "/sidecar"]
           volumeMounts:
@@ -34,7 +34,7 @@ spec:
             - name: SW_AGENT_NAME
               value: apm-item
             - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-              value: skywalk-1h6lqf-skywalking-skywalking-oap.demo:11800 # skywalk oap 后端服务
+              value: skywalking-oap.demo.svc:11800 # skywalk oap 后端服务
             - name: EUREKA_HOSTNAME
               value: apm-eureka
             - name: EUREKA_PORT
